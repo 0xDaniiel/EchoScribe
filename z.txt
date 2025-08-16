@@ -1,0 +1,3 @@
+NO consioe.log in backend
+rupdate frontnedn to look good
+us e different ai model 

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Readable } from "stream";
 
-export const runtime = "edge"; // or 'nodejs' if using local filesystem
+export const runtime = "edge"; // or 'nodejs' if you switch to using fs modules
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -11,34 +10,42 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
-  // Convert file to stream to send to OpenAI
-  const stream = file.stream() as ReadableStream;
+  try {
+    // Convert file to binary (Uint8Array)
+    const buffer = await file.arrayBuffer();
+    const audioBytes = new Uint8Array(buffer);
 
-  const response = await fetch(
-    "https://api.openai.com/v1/audio/transcriptions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
-      },
-      body: createWhisperFormData(file),
+    // Send to Hugging Face API (you can change the model if needed)
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/openai/whisper-small",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": file.type || "audio/mpeg", // fallback MIME type
+        },
+        body: audioBytes,
+      }
+    );
+
+    const data = await response.json();
+
+    // Log full response (helps debug any failures)
+    console.log("Hugging Face API response:", data);
+
+    if (!response.ok || data.error) {
+      return NextResponse.json(
+        { error: data.error || "Failed to transcribe" },
+        { status: 500 }
+      );
     }
-  );
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    return NextResponse.json({ error: data.error }, { status: 500 });
+    return NextResponse.json({ transcript: data.text || data });
+  } catch (error) {
+    console.error("Error transcribing file:", error);
+    return NextResponse.json(
+      { error: "Transcription failed" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ transcript: data.text });
-}
-
-// Utility: OpenAI wants multipart/form-data with the file
-function createWhisperFormData(file: File) {
-  const form = new FormData();
-  form.append("file", file);
-  form.append("model", "whisper-1");
-  form.append("language", "en");
-  return form;
 }
