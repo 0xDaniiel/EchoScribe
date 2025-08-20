@@ -27,7 +27,7 @@ Transcript sent to Hugging Face summarization model → get action items / bulle
 
 Display transcript + summary in the frontend
 
-✅ TL;DR:
+ 
 
 Frontend: Next.js + React + Tailwind + FileUpload
 

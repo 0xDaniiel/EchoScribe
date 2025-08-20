@@ -37,14 +37,14 @@ export default function FileUpload({ onUpload, className }: FileUploadProps) {
     >
       <input
         type="file"
-        accept="audio/*"
+        accept="audio/*,video/*"
         onChange={handleFileChange}
         className="block w-full text-sm text-gray-500
-                   file:mr-4 file:py-2 file:px-4
-                   file:rounded-full file:border-0
-                   file:text-sm file:font-semibold
-                   file:bg-blue-50 file:text-blue-700
-                   hover:file:bg-blue-100"
+             file:mr-4 file:py-2 file:px-4
+             file:rounded-full file:border-0
+             file:text-sm file:font-semibold
+             file:bg-blue-50 file:text-blue-700
+             hover:file:bg-blue-100"
       />
 
       {/* Upload progress bar */}
