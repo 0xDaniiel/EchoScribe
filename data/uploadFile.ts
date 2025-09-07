@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 
-export const handleUpload = async (
+export const handleUpload = (
   file: File,
   setUploadProgress: (p: number) => void,
   setIsTranscribing: (b: boolean) => void,
@@ -13,37 +13,27 @@ export const handleUpload = async (
 
   xhr.open("POST", "/api/transcribe");
 
-  // Track upload progress
   xhr.upload.onprogress = (event) => {
     if (event.lengthComputable) {
-      const percent = Math.round((event.loaded / event.total) * 100);
-      setUploadProgress(percent);
+      setUploadProgress(Math.round((event.loaded / event.total) * 100));
     }
   };
 
   xhr.onload = async () => {
-    // Upload completed → show transcribing immediately
     setUploadProgress(100);
     setIsTranscribing(true);
 
     try {
       const data = JSON.parse(xhr.responseText);
 
-      if (xhr.status !== 200) {
-        toast.error("Upload failed");
+      if (!xhr.status.toString().startsWith("2") || data.error) {
+        toast.error("Transcription failed: " + (data.error || "Unknown error"));
         return;
       }
 
-      // Ensure the "Transcribing..." message is visible for at least 1.5s
-      await new Promise((res) => setTimeout(res, 1500));
-
-      if (data.error) {
-        toast.error("Transcription failed");
-      } else {
-        setTranscript(data.transcript);
-        setSummary(data.summary);
-        toast.success("Transcription completed!");
-      }
+      setTranscript(data.transcript);
+      setSummary(data.summary);
+      toast.success("Transcription completed!");
     } catch {
       toast.error("Transcription failed");
     } finally {
