@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@huggingface/inference": "^4.7.1",
     "@radix-ui/react-slot": "^1.2.3",
@@ -20,6 +19,7 @@
     "lucide-react": "^0.536.0",
     "next": "15.4.5",
     "node-fetch": "^3.3.2",
+    "openai": "^5.19.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",

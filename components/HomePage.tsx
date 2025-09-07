@@ -1,7 +1,6 @@
 "use client";
-
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import  { Toaster } from "react-hot-toast";
 import FileUpload from "@/components/FileUpload";
 import { cards } from "@/data/cards";
 import { handleUpload as uploadFile } from "@/data/uploadFile";
